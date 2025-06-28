@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import { cache } from "react"
 
 declare global {
     var mongoose: MongooseCache | undefined

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { assets } from "@/assets/assets"
 import SideBar from "@/components/SideBar";
 import PromptBox from "@/components/PromptBox";
-import Message from "@/components/Message";
+// import Message from "@/components/Message";
 
 export default function Home() {
 

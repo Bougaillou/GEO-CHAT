@@ -6,8 +6,8 @@ type OpenMenu = {
     id: number
     open: boolean
 }
-
-const ChatLabel = ({ openMenu, setOpenMenu }: { openMenu: OpenMenu, setOpenMenu: (openMenu: OpenMenu) => void }) => {
+// , setOpenMenu , setOpenMenu: (openMenu: OpenMenu) => void 
+const ChatLabel = ({ openMenu }: { openMenu: OpenMenu}) => {
     return (
         <>
             <div className='flex items-center justify-between p-2 text-white/80 hover:bg-white/10 rounded-lg text-sm group cursor-pointer'>

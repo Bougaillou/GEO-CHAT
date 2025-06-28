@@ -12,7 +12,7 @@ interface UserType {
     image_url: string
 }
 
-export async function POST(req: any) {
+export async function POST(req: Request) {
     const wh = new Webhook(process.env.SINGING_SECRET!)
     const headerPayload = await headers()
 

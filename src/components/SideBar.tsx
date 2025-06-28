@@ -1,15 +1,17 @@
 "use client"
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import { assets } from '@/assets/assets'
 import { useClerk, UserButton } from '@clerk/nextjs'
 import { useAppContext } from '@/context/AppContext'
+import ChatLabel from './ChatLabel'
 
 const SideBar = ({ expand, setExpand }: { expand: boolean, setExpand: (expand: boolean) => void }) => {
 
   const { openSignIn } = useClerk()
   const { user } = useAppContext()
-  console.log(user)
+  const [openMenu, setOpenMenu] = useState({ id: 0, open: false })
+
   const handleSignInClick = () => {
     if (user) return null
     openSignIn();
@@ -45,7 +47,7 @@ const SideBar = ({ expand, setExpand }: { expand: boolean, setExpand: (expand: b
 
           <div className={`my-8 text-white/25 text-sm ${expand ? "block" : 'hidden'}`} >
             <p className='my-1'>Recent</p>
-
+            <ChatLabel openMenu={openMenu} setOpenMenu={setOpenMenu} />
           </div>
         </div>
         <div>

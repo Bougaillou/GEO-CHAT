@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     try {
         const { userId } = getAuth(req)
         if (!userId) {
-            return new Response(JSON.stringify({  succes:false,, error: "Unauthorized" }), { status: 401 });
+            return new Response(JSON.stringify({  succes:false, error: "Unauthorized" }), { status: 401 });
         }
 
         const chatData = {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { assets } from "@/assets/assets"
 import SideBar from "@/components/SideBar";
 import PromptBox from "@/components/PromptBox";
+import Message from "@/components/Message";
 
 export default function Home() {
 
@@ -35,7 +36,11 @@ export default function Home() {
               </>
             ) : (
               <>
-                <div></div>
+                <div>
+                  {/* <Message role="user" content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro similique dicta, dolor id veniam et tempora, explicabo, sapiente at deleniti repellat accusantium! Quis, beatae. Quasi aut magni a aliquid numquam?"/> */}
+                  {/* <Message role="" content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro similique dicta, dolor id veniam et tempora, explicabo, sapiente at deleniti repellat accusantium! Quis, beatae. Quasi aut magni a aliquid numquam?"/> */}
+
+                </div>
               </>
             )}
             <div className="flex items-center flex-col absolute bottom-1 w-full">

@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     }
     const svixHeaders = {
         "svix-id": svix_id,
-        'svix_timestamp': svix_timestamp,
+        'svix-timestamp': svix_timestamp,
         "svix-signature": svix_signature,
     }
 

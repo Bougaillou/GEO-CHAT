@@ -5,10 +5,11 @@ import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 
 interface UserType {
-    _id: string
-    name: string
-    email: string
-    image: string
+    id: string,
+    email_addresses: { email_address: string }[];
+    first_name: string
+    last_name: string
+    image_url: string
 }
 
 export async function POST(req: any) {
@@ -35,5 +36,33 @@ export async function POST(req: any) {
 
     const { data, type } = wh.verify(body, svixHeaders) as WebhookEvent
 
-// const userData
+
+
+    const { id, email_addresses, first_name, last_name, image_url } = data as UserType;
+    const userData = {
+        _id: id,
+        email: email_addresses[0].email_address,
+        firstName: first_name,
+        lastName: last_name,
+        image: image_url
+    }
+
+    await connectDB()
+
+    switch (type) {
+        case 'user.created':
+            await User.create(userData)
+            break
+        case 'user.updated':
+            await User.findByIdAndUpdate(data.id, userData)
+            break
+        case 'user.deleted':
+            await User.findByIdAndDelete(data.id)
+            break
+        default:
+            break
+    }
+
+    return new Response("Event successfully", { status: 200 })
+
 }

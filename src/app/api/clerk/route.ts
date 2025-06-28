@@ -1,6 +1,6 @@
 import { Webhook } from "svix"
 import connectDB from "@/config/db"
-import User from "@/models/user"
+import User from "@/models/User"
 import { headers } from "next/headers"
 import { WebhookEvent } from "@clerk/nextjs/server";
 
@@ -38,14 +38,20 @@ export async function POST(req: Request) {
 
 
 
-    const { id, email_addresses, first_name, last_name, image_url } = data as UserType
+    const { id, email_addresses, first_name, last_name, image_url } = data as UserType;
+
+    if (!email_addresses || email_addresses.length === 0) {
+        return new Response("Missing email address in Clerk payload", { status: 400 });
+    }
+
     const userData = {
         _id: id,
         email: email_addresses[0].email_address,
         firstName: first_name,
         lastName: last_name,
         image: image_url
-    }
+    };
+
 
     await connectDB()
 

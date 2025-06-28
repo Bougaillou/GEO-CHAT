@@ -1,7 +1,7 @@
-import { Webhook } from "svix";
-import connectDB from "@/config/db";
-import User from "@/models/user";
-import { headers } from "next/headers";
+import { Webhook } from "svix"
+import connectDB from "@/config/db"
+import User from "@/models/user"
+import { headers } from "next/headers"
 import { WebhookEvent } from "@clerk/nextjs/server";
 
 interface UserType {
@@ -16,19 +16,19 @@ export async function POST(req: Request) {
     const wh = new Webhook(process.env.SINGING_SECRET!)
     const headerPayload = await headers()
 
-    const svix_id = headerPayload.get("svix-id");
-    const svix_signature = headerPayload.get("svix-signature");
-    const svix_timestamp = headerPayload.get("svix-timestamp");
+    const svix_id = headerPayload.get("svix-id")
+    const svix_timestamp = headerPayload.get("svix-timestamp")
+    const svix_signature = headerPayload.get("svix-signature")
 
     if (!svix_id || !svix_signature || !svix_timestamp) {
         return new Response("No svix headers found", {
             status: 400,
-        });
+        })
     }
     const svixHeaders = {
         "svix-id": svix_id,
+        'svix_timestamp': svix_timestamp,
         "svix-signature": svix_signature,
-        'svix_timestamp': svix_timestamp
     }
 
     const payload = await req.json()
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
 
 
-    const { id, email_addresses, first_name, last_name, image_url } = data as UserType;
+    const { id, email_addresses, first_name, last_name, image_url } = data as UserType
     const userData = {
         _id: id,
         email: email_addresses[0].email_address,

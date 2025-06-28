@@ -1,22 +1,15 @@
 "use client"
 
 import { useUser } from "@clerk/nextjs"
+import type { UserResource } from '@clerk/types';
 import { createContext, useContext } from "react"
 
-export interface UserContract {
-    id?: string
-    firstName?: string
-    email?: string
-    lastName?: string
-    image?: string
-}
-
 export interface AppState {
-    user?: UserContract
+    user?: UserResource | null | undefined
 }
 
 const defaultState: AppState = {
-    user: {},
+    user: null,
 }
 
 export const AppContext = createContext<AppState>(defaultState)
@@ -28,16 +21,8 @@ export const useAppContext = () => {
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useUser()
 
-    const mappedUser: UserContract = {
-        id: user?.id || undefined,
-        firstName: user?.firstName || undefined,
-        email: user?.emailAddresses?.[0]?.emailAddress || undefined,
-        lastName: user?.lastName || undefined,
-        image: user?.imageUrl || undefined
-    }
-
     const value: AppState = {
-        user: mappedUser,
+        user
     }
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>

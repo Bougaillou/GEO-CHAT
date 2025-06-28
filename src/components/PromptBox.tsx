@@ -2,8 +2,8 @@
 import { assets } from '@/assets/assets'
 import React, { useState } from 'react'
 import Image from "next/image";
-// { isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void }
-const PromptBox = () => {
+
+const PromptBox = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void }) => {
 
     const [prompt, setPrompt] = useState('')
 

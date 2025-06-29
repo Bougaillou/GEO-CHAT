@@ -2,11 +2,10 @@ import connectDB from "@/config/db";
 import Chat from "@/models/Chat";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize Gemini API
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
     try {
@@ -27,6 +26,7 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ success: false, error: "Chat not found" }), { status: 404 });
         }
 
+        // Store user message
         const userPrompt = {
             role: "user",
             content: prompt,
@@ -34,16 +34,16 @@ export async function POST(req: NextRequest) {
         };
         data.messages.push(userPrompt);
 
-        console.log('/////////////////////')
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: prompt }],
-            store: true,
-        });
+        // Generate response using Gemini
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        const geminiReply = response.text();
 
-        console.log('/////////////////////')
+        // Store Gemini message
         const message = {
-            ...completion.choices[0].message,
+            role: "assistant",
+            content: geminiReply,
             timestamp: Date.now(),
         };
 
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
         await data.save();
 
         return new Response(JSON.stringify({ success: true, data: message }), { status: 200 });
+
     } catch (error) {
         const err = error as Error;
         return new Response(JSON.stringify({ success: false, error: err.message }), { status: 400 });

@@ -3,17 +3,47 @@
 import { useAuth, useUser } from "@clerk/nextjs"
 import type { UserResource } from '@clerk/types';
 import axios from "axios";
-import { get } from "http";
 import { createContext, useContext, useEffect, useState } from "react"
 import toast from "react-hot-toast";
 
-export interface AppState {
-    user?: UserResource | null | undefined
+export interface Message {
+    role: string
+    content: string
+    timestamp: number
+
 }
+
+export interface Chat {
+    _id : string
+    name: string;
+    messages: Message[];
+    userId: string
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AppState {
+    user?: UserResource | null;
+    chats: Chat[];
+    setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
+    selectedChat: Chat | null;
+    setSelectedChat: React.Dispatch<React.SetStateAction<Chat | null>>;
+    fetchUsersChat: () => Promise<void>;
+    createNewChat: () => Promise<null | void>;
+}
+
 
 const defaultState: AppState = {
     user: null,
-}
+    chats: [],
+    setChats: () => { },
+    selectedChat: null,
+    setSelectedChat: () => { },
+    fetchUsersChat: async () => { },
+    createNewChat: async () => null,
+};
+
+
 
 export const AppContext = createContext<AppState>(defaultState)
 
@@ -25,8 +55,9 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
     const { user } = useUser()
     const { getToken } = useAuth()
 
-    const [chats, setChats] = useState([])
-    const [selectedChat, setSelectedChat] = useState(null)
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+
 
     const createNewChat = async () => {
         try {
@@ -84,7 +115,7 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
             fetchUsersChat()
         }
     }, [user])
-    const value = {
+    const value: AppState = {
         user,
         chats,
         setChats,

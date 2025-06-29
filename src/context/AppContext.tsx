@@ -6,7 +6,7 @@ import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react"
 import toast from "react-hot-toast";
 
-export interface Message {
+export interface MessageInterface {
     role: string
     content: string
     timestamp: number
@@ -16,7 +16,7 @@ export interface Message {
 export interface Chat {
     _id : string
     name: string;
-    messages: Message[];
+    messages: MessageInterface[];
     userId: string
     createdAt: string;
     updatedAt: string;

@@ -1,3 +1,4 @@
+'use client'
 import { assets } from '@/assets/assets'
 import React from 'react'
 import Image from 'next/image'
@@ -5,10 +6,11 @@ import { Chat, useAppContext } from '@/context/AppContext'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-type OpenMenu = {
+interface OpenMenu {
     id: number | string
     open: boolean
 }
+
 
 const ChatLabel = ({ openMenu, setOpenMenu, id, name }: { openMenu: OpenMenu, setOpenMenu: (openMenu: OpenMenu) => void, id: string, name: string }) => {
 
@@ -24,7 +26,7 @@ const ChatLabel = ({ openMenu, setOpenMenu, id, name }: { openMenu: OpenMenu, se
         try {
             const newName = prompt('Enter new name')
             if (!newName) return
-            const { data } = await axios.post('/api:chat/rename', { chatId: id, name: newName })
+            const { data } = await axios.post('/api/chat/rename', { chatId: id, name: newName })
             if (data.success) {
                 fetchUsersChat()
                 setOpenMenu({ id: 0, open: false })

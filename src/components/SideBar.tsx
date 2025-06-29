@@ -6,11 +6,16 @@ import { useClerk, UserButton } from '@clerk/nextjs'
 import { useAppContext } from '@/context/AppContext'
 import ChatLabel from './ChatLabel'
 
+interface OpenMenu {
+  id: number | string
+  open: boolean
+}
+
 const SideBar = ({ expand, setExpand }: { expand: boolean, setExpand: (expand: boolean) => void }) => {
 
   const { openSignIn } = useClerk()
-  const { user } = useAppContext()
-  const [openMenu, setOpenMenu] = useState({ id: 0, open: false })
+  const { user, chats, createNewChat } = useAppContext()
+  const [openMenu, setOpenMenu] = useState<OpenMenu>({ id: 0, open: false })
 
   const handleSignInClick = () => {
     if (user) return null
@@ -36,7 +41,7 @@ const SideBar = ({ expand, setExpand }: { expand: boolean, setExpand: (expand: b
             </div>
           </div>
 
-          <button className={`mt-8 flex items-center justify-center cursor-pointer ${expand ? "bg-primary hover:opacity-90 rounded-2xl gap-2 p-2.5 w-max" : "group relative h-9 w-9 mx-auto hover:bg-gray-500/30 rounded-lg"}`}>
+          <button onClick={createNewChat} className={`mt-8 flex items-center justify-center cursor-pointer ${expand ? "bg-primary hover:opacity-90 rounded-2xl gap-2 p-2.5 w-max" : "group relative h-9 w-9 mx-auto hover:bg-gray-500/30 rounded-lg"}`}>
             <Image className={expand ? 'w-6' : 'w-7'} src={expand ? assets.chat_icon : assets.chat_icon_dull} alt='chat_icon' />
             <div className='absolute w-max -top-12 -right-12 opacity-0 group-hover:opacity-100 transition bg-black text-white text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none'>
               New Chat
@@ -47,7 +52,10 @@ const SideBar = ({ expand, setExpand }: { expand: boolean, setExpand: (expand: b
 
           <div className={`my-8 text-white/25 text-sm ${expand ? "block" : 'hidden'}`} >
             <p className='my-1'>Recent</p>
-            <ChatLabel openMenu={openMenu} setOpenMenu={setOpenMenu} />
+            {chats.map((chat) => (
+              <ChatLabel key={chat._id} name={chat.name} id={chat._id} openMenu={openMenu} setOpenMenu={setOpenMenu} />
+            ))
+            }
           </div>
         </div>
         <div>

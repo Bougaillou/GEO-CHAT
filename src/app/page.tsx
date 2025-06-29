@@ -6,6 +6,7 @@ import SideBar from "@/components/SideBar";
 import PromptBox from "@/components/PromptBox";
 import { MessageInterface, useAppContext } from "@/context/AppContext";
 import Message from "@/components/Message";
+import Markdown from "react-markdown";
 // import Message from "@/components/Message";
 
 export default function Home() {

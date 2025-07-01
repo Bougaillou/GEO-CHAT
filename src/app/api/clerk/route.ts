@@ -1,6 +1,6 @@
 import { Webhook } from "svix"
 import connectDB from "@/config/db"
-import User from "@/models/User"
+import User from "@/models/user"
 import { headers } from "next/headers"
 import { WebhookEvent } from "@clerk/nextjs/server";
 
@@ -71,4 +71,4 @@ export async function POST(req: Request) {
 
     return new Response("Event successfully", { status: 200 })
 
-}
+}   

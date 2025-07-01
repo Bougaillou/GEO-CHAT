@@ -1,5 +1,5 @@
 import connectDB from "@/config/db";
-import Chat from "@/models/Chat";
+import Chat from "@/models/chat";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
         data.messages.push(message);
         await data.save();
-        
+
         return new Response(JSON.stringify({ success: true, data: message }), { status: 200 });
 
     } catch (error) {

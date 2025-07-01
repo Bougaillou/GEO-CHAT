@@ -1,12 +1,12 @@
 import connectDB from "@/config/db";
-import Chat from "@/models/Chat";
+import Chat from "@/models/chat";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
         const { userId } = getAuth(req)
-        const {chatId} = await req.json()
+        const { chatId } = await req.json()
 
         if (!userId) {
             return new Response(JSON.stringify({ succes: false, error: "Unauthorized" }), { status: 401 });

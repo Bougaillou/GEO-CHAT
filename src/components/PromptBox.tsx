@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { Map } from 'lucide-react';
 
-const PromptBox = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void }) => {
+const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void, displayMap: boolean, setDisplayMap: (displayMap: boolean) => void }) => {
 
     const [prompt, setPrompt] = useState('')
     const { user, chats, setChats, selectedChat, setSelectedChat } = useAppContext()
@@ -127,7 +127,7 @@ const PromptBox = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoadi
                             <Image className='h-5' src={assets.search_icon} alt='search_icon' />
                             Search
                         </p> */}
-                        <p className='flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition'>
+                        <p onClick={() => displayMap ? setDisplayMap(false) : setDisplayMap(true)} className='flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition'>
                             <Map className='h-5 text-gray-400' /> Map
                         </p>
                     </div>

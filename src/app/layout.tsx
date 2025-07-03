@@ -5,7 +5,9 @@ import "./prism.css"
 import { ClerkProvider } from "@clerk/nextjs";
 import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
-import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw.css'
+
 
 
 const geistSans = Geist({

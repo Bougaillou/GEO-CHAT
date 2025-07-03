@@ -1,6 +1,13 @@
 'use client'
 import React from 'react'
 import { X } from 'lucide-react'
+// import LeafletMap from './LeafletMap'
+import dynamic from 'next/dynamic'
+
+const LeafletMap = dynamic(() => import('./LeafletMap'), {
+    ssr: false,
+    loading: () => <p>Chargement de la carte...</p>,
+})
 
 const MapDisplay = ({ displayMap, setDisplayMap }: { displayMap: boolean, setDisplayMap: (displayMap: boolean) => void }) => {
     return (
@@ -10,7 +17,7 @@ const MapDisplay = ({ displayMap, setDisplayMap }: { displayMap: boolean, setDis
                 <X className="text-white cursor-pointer hover:text-red-400 transition" onClick={() => setDisplayMap(false)} />
             </div>
             <div className="w-full h-full flex justify-center items-center text-white">
-                MapDisplay Content
+                <LeafletMap />
             </div>
         </div>
     )

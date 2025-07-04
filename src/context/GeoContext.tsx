@@ -4,8 +4,11 @@ import { useAuth, useUser } from '@clerk/nextjs'
 import React, { createContext, useContext, useState } from 'react'
 
 interface GeometryInterface {
-  type: string
-  coordinates: number[][][] | number[][]
+  title: string
+  data: {
+    type: string
+    coordinates: number[][][] | number[][]
+  }
 }
 
 export interface GeoState {

@@ -98,6 +98,8 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
     const [selectedArea, setSelectedArea] = useState<GeoJSONFeature | null>(null)
     const [showFinalizeButton, setShowFinalizeButton] = useState<boolean>(false)
 
+    const [coordinationTitle, setCoordinationTitle] = useState('New Coord')
+
 
     const { setGeometry } = useGeoContext()
 
@@ -106,10 +108,17 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
         setShowFinalizeButton(!!geojson)
     }
 
+    // const handle
+
     const handleFinalize = () => {
         if (selectedArea) {
             console.log('Finalizing area:', selectedArea)
-            setGeometry(selectedArea.geometry)
+            setGeometry({
+                title: coordinationTitle,
+                data: selectedArea.geometry
+            })
+            setSelectedArea(null)
+            setShowFinalizeButton(false)
             setDisplayMap(false)
         }
     }
@@ -130,12 +139,23 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
             </MapContainer>
 
             {showFinalizeButton && (
-                <button
-                    onClick={handleFinalize}
-                    className="absolute bottom-20 cursor-pointer left-1/2 z-[1000] -translate-x-1/2 transform rounded-lg border-none bg-gray-600 px-6 py-3 text-base font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                    Finalize
-                </button>
+                <div className=' absolute bottom-20 left-1/2 z-[1000] -translate-x-1/2 transform flex items-center bg-gray-700'>
+                    <button
+                        onClick={handleFinalize}
+                        className="rounded-md bg-gray-700 px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                    >
+                        Finalize
+                    </button>
+
+                    <input
+                        type="text"
+                        placeholder="Title"
+                        value={coordinationTitle}
+                        onChange={(e) => setCoordinationTitle(e.target.value)}
+                        className="w-48 rounded-md border border-gray-500 bg-gray-800 px-3 py-1.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                    />
+                </div>
+
             )}
         </div>
     )

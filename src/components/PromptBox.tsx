@@ -5,14 +5,14 @@ import Image from "next/image";
 import { useAppContext } from '@/context/AppContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { Box, Map } from 'lucide-react';
+import { Box, Map, X } from 'lucide-react';
 import { useGeoContext } from '@/context/GeoContext';
 
 const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void, displayMap: boolean, setDisplayMap: (displayMap: boolean) => void }) => {
 
     const [prompt, setPrompt] = useState('')
     const { user, chats, setChats, selectedChat, setSelectedChat } = useAppContext()
-    const { geometry } = useGeoContext()
+    const { geometry, setGeometry } = useGeoContext()
 
     const sendPrompt = async () => {
         const promptCopy = prompt
@@ -121,24 +121,17 @@ const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isL
                 />
                 <div className='flex items-center justify-between text-sm'>
                     <div className='flex items-center gap-2'>
-                        {/* <p className='flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition'>
-                            <Image className='h-5' src={assets.deepthink_icon} alt='deepthink_icon' />
-                            DeepThink (R1)
-                        </p>
-                        <p className='flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition'>
-                            <Image className='h-5' src={assets.search_icon} alt='search_icon' />
-                            Search
-                        </p> */}
                         <p onClick={() => displayMap ? setDisplayMap(false) : setDisplayMap(true)} className='flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition'>
                             <Map className='h-5 text-gray-400' /> Map
                         </p>
                         {geometry &&
-                            <p onClick={() => displayMap ? setDisplayMap(false) : setDisplayMap(true)} className='flex items-center gap-2 text-xs border border-blue-500 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition'>
-                                <Box className='h-5 text-gray-400' /> GeoData
+                            <p className=' relative flex items-center gap-2 group text-xs border border-blue-500 px-2 py-1 rounded-full  hover:bg-gray-500/20 transition'>
+                                <X onClick={() => setGeometry(null)} className='size-4 absolute -top-1 -left-1 hidden  group-hover:inline-block rounded-full text-white bg-red-500 z-10 cursor-pointer' />
+                                <Box className='h-5 text-gray-400' /> GeoData - {geometry.title}
+
                             </p>
                         }
                     </div>
-
                     <div className='flex items-center gap-2'>
                         <Image className='w-4 cursor-pointer' src={assets.pin_icon} alt='pin_icon' />
                         <button className={`${prompt ? "bg-primary" : "bg-[#71717a]"} rounded-full p-2 cursor-pointer`}>

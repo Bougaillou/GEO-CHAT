@@ -7,6 +7,7 @@ import 'leaflet-draw'
 
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
+import { useGeoContext } from '@/context/GeoContext'
 
 
 function toGeoJSONSafe(layer: L.Layer) {
@@ -93,12 +94,14 @@ function DrawControl({ onAreaSelected, onFinalize }: DrawControlProps) {
     return null
 }
 
-export default function LeafletMap(): React.JSX.Element {
+export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayMap: boolean) => void }) {
     const [selectedArea, setSelectedArea] = useState<GeoJSONFeature | null>(null)
     const [showFinalizeButton, setShowFinalizeButton] = useState<boolean>(false)
 
+
+    const { setGeometry } = useGeoContext()
+
     const handleAreaSelected = (geojson: GeoJSONFeature | null): void => {
-        console.log("//////::", geojson)
         setSelectedArea(geojson)
         setShowFinalizeButton(!!geojson)
     }
@@ -106,9 +109,8 @@ export default function LeafletMap(): React.JSX.Element {
     const handleFinalize = () => {
         if (selectedArea) {
             console.log('Finalizing area:', selectedArea)
-            // Add your finalization logic here
-            // Optionally hide the button after finalization
-            // setShowFinalizeButton(false)
+            setGeometry(selectedArea.geometry)
+            setDisplayMap(false)
         }
     }
 

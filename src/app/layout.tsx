@@ -7,6 +7,7 @@ import { AppContextProvider } from "@/context/AppContext";
 import { Toaster } from "react-hot-toast";
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw.css'
+import { GeoContextProvider } from "@/context/GeoContext";
 
 
 
@@ -33,27 +34,30 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <AppContextProvider>
-        <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Toaster toastOptions={
-              {
-                success: {
-                  style: {
-                    background: 'black', color: 'white'
-                  }
-                },
-                error: {
-                  style: {
-                    background: 'black', color: 'white'
+        <GeoContextProvider>
+          <html lang="en">
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <Toaster toastOptions={
+                {
+                  success: {
+                    style: {
+                      background: 'black', color: 'white'
+                    }
+                  },
+                  error: {
+                    style: {
+                      background: 'black', color: 'white'
+                    }
                   }
                 }
-              }
-            } />
-            {children}
-          </body>
-        </html>
+              } />
+              {children}
+            </body>
+          </html>
+
+        </GeoContextProvider>
       </AppContextProvider>
     </ClerkProvider>
   );

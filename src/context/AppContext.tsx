@@ -14,7 +14,7 @@ export interface MessageInterface {
 }
 
 export interface Chat {
-    _id : string
+    _id: string
     name: string;
     messages: MessageInterface[];
     userId: string

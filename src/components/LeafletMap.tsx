@@ -8,6 +8,7 @@ import 'leaflet-draw'
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import { useGeoContext } from '@/context/GeoContext'
+import axios from 'axios'
 
 
 function toGeoJSONSafe(layer: L.Layer) {
@@ -97,6 +98,7 @@ function DrawControl({ onAreaSelected, onFinalize }: DrawControlProps) {
 export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayMap: boolean) => void }) {
     const [selectedArea, setSelectedArea] = useState<GeoJSONFeature | null>(null)
     const [showFinalizeButton, setShowFinalizeButton] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const [coordinationTitle, setCoordinationTitle] = useState('New Coord')
 
@@ -105,23 +107,39 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
 
     const handleAreaSelected = (geojson: GeoJSONFeature | null): void => {
         setSelectedArea(geojson)
-        setShowFinalizeButton(!!geojson)
+        setShowFinalizeButton(true)
     }
 
     // const handle
-
-    const handleFinalize = () => {
+    const handleFinalize = async () => {
         if (selectedArea) {
-            console.log('Finalizing area:', selectedArea)
-            setGeometry({
-                title: coordinationTitle,
-                data: selectedArea.geometry
-            })
-            setSelectedArea(null)
-            setShowFinalizeButton(false)
-            setDisplayMap(false)
+            console.log('Finalizing area:', selectedArea);
+
+            try {
+                setIsLoading(true);
+                // console.log(selectedArea.geometry)
+                const response = await axios.post('/api/gee', {
+                    polygon: selectedArea.geometry
+                });
+                console.log(response.data);
+
+                setGeometry({
+                    title: coordinationTitle,
+                    data: selectedArea.geometry
+                });
+            } catch (error) {
+                console.error("API Error:", error);
+            } finally {
+                setIsLoading(false);
+            }
+
+            setSelectedArea(null);
+            setShowFinalizeButton(false);
+            setDisplayMap(false);
         }
-    }
+
+    };
+
 
     return (
         <div className="relative h-full w-full">
@@ -139,24 +157,42 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
             </MapContainer>
 
             {showFinalizeButton && (
-                <div className=' absolute bottom-20 left-1/2 z-[1000] -translate-x-1/2 transform flex items-center bg-gray-700'>
-                    <button
-                        onClick={handleFinalize}
-                        className="rounded-md bg-gray-700 px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                    >
-                        Finalize
-                    </button>
 
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        value={coordinationTitle}
-                        onChange={(e) => setCoordinationTitle(e.target.value)}
-                        className="w-48 rounded-md border border-gray-500 bg-gray-800 px-3 py-1.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                    />
-                </div>
+                <>
+                    {isLoading
+                        ?
 
-            )}
-        </div>
+                        < div className=' absolute bottom-20 left-1/2 z-[1000] -translate-x-1/2 transform flex items-center bg-gray-700'>
+                            <button
+                                className="rounded-md bg-gray-700 px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                            >
+                                LOADING
+                            </button>
+                        </div>
+
+                        :
+                        <div className=' absolute bottom-20 left-1/2 z-[1000] -translate-x-1/2 transform flex items-center bg-gray-700'>
+                            <button
+                                onClick={handleFinalize}
+                                className="rounded-md bg-gray-700 px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                            >
+                                Finalize
+                            </button>
+
+                            <input
+                                type="text"
+                                placeholder="Title"
+                                value={coordinationTitle}
+                                onChange={(e) => setCoordinationTitle(e.target.value)}
+                                className="w-48 rounded-md border border-gray-500 bg-gray-800 px-3 py-1.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                            />
+                        </div>
+                    }
+                </>
+
+
+            )
+            }
+        </div >
     )
 }

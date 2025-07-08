@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.1",
+    "@google/earthengine": "^1.5.22",
     "@google/genai": "^1.7.0",
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.10.0",
+    "google-auth-library": "^10.1.0",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "lucide-react": "^0.525.0",

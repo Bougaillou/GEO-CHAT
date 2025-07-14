@@ -1,12 +1,13 @@
 'use client'
-import { assets } from '@/assets/assets'
-import React, { EventHandler, KeyboardEventHandler, useState } from 'react'
-import Image from "next/image";
+import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext';
-import toast from 'react-hot-toast';
+import { useGeoContext } from '@/context/GeoContext';
+import { generateAnalysePrompt } from '@/utils/generateAnalysePrompt';
 import axios from 'axios';
 import { Box, Map, X } from 'lucide-react';
-import { useGeoContext } from '@/context/GeoContext';
+import Image from "next/image";
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void, displayMap: boolean, setDisplayMap: (displayMap: boolean) => void }) => {
 
@@ -52,7 +53,7 @@ const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isL
 
                 const message = data.data.content
                 const messageTokens = message.split(' ')
-                let assistingMessage = {
+                const assistingMessage = {
                     role: 'assistant',
                     content: '',
                     timestamp: Date.now()
@@ -92,16 +93,111 @@ const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isL
         }
     }
 
+
+    // Prompt Pour l'analyse de donne
+    const analysePrompt = async () => {
+        if (!geometry) return null
+
+        const value = geometry.data // The value to convert to a JSON string
+        const replacer = null // This is used to filter or modify which properties get included in the output
+        const space = 2 // This tells JSON.stringify() to pretty-print the result with indentation
+        const promptCopy = `${prompt}\n\nHere is the data:\n${JSON.stringify(value, replacer, space)}`
+        const generatedPrompt = generateAnalysePrompt(geometry.data, prompt)
+
+        try {
+            if (!user) return toast.error('Login to send Message')
+            if (isLoading) return toast.error("Wait fot the prvious prompt")
+
+            setIsLoading(true)
+            setPrompt('')
+
+            const userPrompt = {
+                role: 'user',
+                content: promptCopy,
+                timestamp: Date.now()
+            }
+
+            setChats((prevChats) => prevChats.map((chat) => chat._id === selectedChat!._id ? {
+                ...chat, messages: [...chat.messages, userPrompt]
+            } : chat))
+
+            setSelectedChat((prev) => {
+                if (!prev) return prev
+                return {
+                    ...prev,
+                    messages: [...prev.messages, userPrompt],
+                };
+            });
+            const { data } = await axios.post('/api/chat/ai', {
+                chatId: selectedChat?._id,
+                prompt: generatedPrompt
+            })
+
+            if (data.success) {
+                setChats((prev) => prev.map((chat) => chat._id === selectedChat!._id
+                    ? { ...chat, messages: [...chat.messages, userPrompt] } : chat))
+
+                const message = data.data.content
+                const messageTokens = message.split(' ')
+                const assistingMessage = {
+                    role: 'assistant',
+                    content: '',
+                    timestamp: Date.now()
+                }
+                setSelectedChat((prev) => {
+                    if (!prev) return prev
+                    return {
+                        ...prev,
+                        messages: [...prev.messages, assistingMessage],
+                    };
+                });
+
+                for (let i = 0; i < messageTokens.length; i++) {
+                    setTimeout(() => {
+                        assistingMessage.content = messageTokens.slice(0, i + 1).join(' ')
+                        setSelectedChat((prev) => {
+                            if (!prev) return prev
+                            const updatedMessages = [
+                                ...prev.messages.slice(0, -1), assistingMessage
+                            ]
+
+                            return { ...prev, messages: updatedMessages }
+                        });
+                    }, i * 100)
+                }
+            } else {
+                toast.error(data.message)
+                setPrompt(promptCopy)
+            }
+
+        } catch (error) {
+            const err = error as Error
+            toast.error(err.message)
+            setPrompt(promptCopy)
+        } finally {
+            setIsLoading(false)
+            setGeometry(null)
+        }
+    }
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            sendPrompt();
+            if (geometry) {
+                analysePrompt()
+            } else {
+                sendPrompt()
+            }
         }
     };
 
     const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        sendPrompt()
+        if (geometry) {
+            analysePrompt()
+        } else {
+            sendPrompt()
+        }
     };
 
 
@@ -111,6 +207,7 @@ const PromptBox = ({ isLoading, setIsLoading, displayMap, setDisplayMap }: { isL
                 onSubmit={handleOnSubmit}
                 className={`w-full ${selectedChat?.messages?.length ? "max-w-3xl" : "max-w-2xl"} bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}
             >
+                {geometry && <p>analyse data</p>}
                 <textarea
                     onKeyDown={handleKeyDown}
                     onChange={(e) => setPrompt(e.target.value)}

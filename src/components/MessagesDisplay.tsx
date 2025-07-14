@@ -1,10 +1,9 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react'
+import { assets } from '@/assets/assets';
 import Message from "@/components/Message";
-import Markdown from "react-markdown";
 import { MessageInterface, useAppContext } from "@/context/AppContext";
 import Image from 'next/image';
-import { assets } from '@/assets/assets';
+import { useEffect, useRef, useState } from 'react';
 
 const MessagesDisplay = ({ isLoading, setIsLoading }: { isLoading: boolean, setIsLoading: (isLoading: boolean) => void }) => {
 

@@ -7,7 +7,7 @@ interface GeometryInterface {
   title: string
   data: {
     type: string
-    coordinates: number[][][] | number[][]
+    coordinates: any
   }
 }
 

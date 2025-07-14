@@ -11,13 +11,6 @@ import { useGeoContext } from '@/context/GeoContext'
 import axios from 'axios'
 
 
-function toGeoJSONSafe(layer: L.Layer) {
-    if ('toGeoJSON' in layer && typeof (layer as any).toGeoJSON === 'function') {
-        return (layer as any).toGeoJSON()
-    }
-    return null
-}
-
 interface GeoJSONFeature {
     type: string
     geometry: {
@@ -32,7 +25,7 @@ interface DrawControlProps {
     onFinalize: () => void
 }
 
-function DrawControl({ onAreaSelected, onFinalize }: DrawControlProps) {
+function DrawControl({ onAreaSelected }: DrawControlProps) {
     const map = useMap()
     const initializedRef = useRef(false)
     const drawnItemsRef = useRef<L.FeatureGroup>(new L.FeatureGroup())
@@ -97,7 +90,6 @@ function DrawControl({ onAreaSelected, onFinalize }: DrawControlProps) {
 
 export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayMap: boolean) => void }) {
     const [selectedArea, setSelectedArea] = useState<GeoJSONFeature | null>(null)
-    const [showFinalizeButton, setShowFinalizeButton] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState(false)
 
     const [coordinationTitle, setCoordinationTitle] = useState('New Coord')
@@ -107,7 +99,6 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
 
     const handleAreaSelected = (geojson: GeoJSONFeature | null): void => {
         setSelectedArea(geojson)
-        setShowFinalizeButton(true)
     }
 
     // const handle
@@ -125,7 +116,7 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
 
                 setGeometry({
                     title: coordinationTitle,
-                    data: selectedArea.geometry
+                    data: response.data.data
                 });
             } catch (error) {
                 console.error("API Error:", error);
@@ -134,7 +125,6 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
             }
 
             setSelectedArea(null);
-            setShowFinalizeButton(false);
             setDisplayMap(false);
         }
 
@@ -156,7 +146,7 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
                 <DrawControl onAreaSelected={handleAreaSelected} onFinalize={handleFinalize} />
             </MapContainer>
 
-            {showFinalizeButton && (
+            {selectedArea && (
 
                 <>
                     {isLoading
@@ -166,7 +156,7 @@ export default function LeafletMap({ setDisplayMap }: { setDisplayMap: (displayM
                             <button
                                 className="rounded-md bg-gray-700 px-5 py-2 text-sm font-medium text-white shadow-md hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400"
                             >
-                                LOADING
+                                LOADING ...
                             </button>
                         </div>
 

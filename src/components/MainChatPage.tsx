@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react";
+import { assets } from '@/assets/assets';
 import PromptBox from "@/components/PromptBox";
-import { assets } from '@/assets/assets'
-import React from 'react'
-import Image from 'next/image'
-import MessagesDisplay from "./MessagesDisplay";
+import Image from 'next/image';
+import { useState } from "react";
 import MapDisplay from "./MapDisplay";
+import MessagesDisplay from "./MessagesDisplay";
 
 const MainChatPage = ({ expand, setExpand }: { expand: boolean, setExpand: (expand: boolean) => void }) => {
     const [isLoading, setIsLoading] = useState(false)

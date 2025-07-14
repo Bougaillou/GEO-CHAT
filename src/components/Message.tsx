@@ -48,7 +48,7 @@ const Message = ({ role, content }: { role: string, content: string }) => {
                         </div>
                         {role === 'user'
                             ? (
-                                <span className='text-white/90'>{content}</span>
+                                <pre className='text-white/90'><Markdown>{content}</Markdown></pre>
                             )
                             : (
                                 <>

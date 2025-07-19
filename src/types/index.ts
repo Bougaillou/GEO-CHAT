@@ -1,3 +1,11 @@
+export interface UserType {
+  userId: string,
+  emailAddress: string;
+  firstname: string
+  lastname: string
+  image: string
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';

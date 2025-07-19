@@ -1,0 +1,23 @@
+import { db } from "@/lib/db";
+import { getAuth } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
+
+export async function POST(req: NextRequest) {
+    try {
+        const { userId } = getAuth(req)
+        const { chatId } = await req.json()
+
+        if (!userId) {
+            return new Response(JSON.stringify({ succes: false, error: "Unauthorized" }))
+        }
+        await db.chat.delete({
+            where: { id: chatId, userId: userId }
+        })
+
+        return new Response(JSON.stringify({ success: true, message: "Chat Delete" }))
+
+    } catch (error) {
+        const err = error as Error
+        return new Response(JSON.stringify({ success: false, error: err.message }))
+    }
+}

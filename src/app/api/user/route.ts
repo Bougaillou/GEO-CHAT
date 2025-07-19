@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { checkUser } from "@/lib/checkUser"
 
-export async function POST() {
+export async function GET() {
     try {
         const user = await checkUser()
 

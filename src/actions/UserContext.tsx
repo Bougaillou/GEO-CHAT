@@ -6,17 +6,15 @@ import axios from "axios"
 
 type UserContextType = {
     user: User | null
-    userLoading: boolean
+    isLoading: boolean
+    setIsLoading: (isLoading: boolean) => void
 }
 
-const UserContext = createContext<UserContextType>({
-    user: null,
-    userLoading: true,
-})
+const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null)
-    const [userLoading, setUserLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -26,7 +24,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             } catch (err) {
                 console.error("User fetch error:", err)
             } finally {
-                setUserLoading(false)
+                setIsLoading(false)
             }
         }
 
@@ -34,10 +32,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     return (
-        <UserContext.Provider value={{ user, userLoading }}>
+        <UserContext.Provider value={{ user, isLoading, setIsLoading }}>
             {children}
         </UserContext.Provider>
     )
 }
 
-export const useUser = () => useContext(UserContext)
+export const useUser = () => {
+    const ctx = useContext(UserContext)
+    if (!ctx) throw new Error("useUser must be used within ChatProvider")
+    return ctx
+}

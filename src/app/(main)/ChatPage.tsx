@@ -1,4 +1,6 @@
 'use client'
+import { useChat } from '@/actions/ChatContext'
+import { useUser } from '@/actions/UserContext'
 import ChatArea from '@/components/ChatArea'
 import ChatInput from '@/components/ChatInput'
 import MapPanel from '@/components/MapPanel'
@@ -14,11 +16,14 @@ import React, { useState } from 'react'
 const ChatPage = () => {
   // useSate
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [chats, setChats] = useState<Chat[]>([])
-  const [currentChat, setCurrentChat] = useState<Chat | null>(null)
+  // const [chats, setChats] = useState<Chat[]>([])
+  // const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [selectedRegion, setSelectedRegion] = useState<RegionCoordinates | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [isMapVisible, setIsMapVisible] = useState(false)
+
+  // useContext
+  const { isLoading, setIsLoading } = useUser()
+  const { chats, currentChat, createChat, deleteChat, selectChat, createMessage, updateChatTime } = useChat()
 
 
   // hooks
@@ -40,40 +45,9 @@ const ChatPage = () => {
 
   // Chat functions
   const createNewChat = () => {
-    const newChat: Chat = {
-      id: Date.now().toString(),
-      title: 'New Chat',
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-
-    setChats(prev => [newChat, ...prev])
-    setCurrentChat(newChat)
-    setSelectedRegion(null)
-
+    createChat('New Chat')
     if (isMobile) {
       setIsSidebarOpen(false)
-    }
-  }
-
-  const selectChat = (chatId: string) => {
-    const chat = chats.find(c => c.id === chatId)
-    if (chat) {
-      setCurrentChat(chat)
-      setSelectedRegion(null)
-    }
-    if (isMobile) {
-      setIsSidebarOpen(false)
-    }
-  }
-
-  const deleteChat = (chatId: string) => {
-    setChats(prev => prev.filter(c => c.id !== chatId))
-
-    if (currentChat?.id === chatId) {
-      const remainingChats = chats.filter(c => c.id !== chatId)
-      setCurrentChat(remainingChats[0] || null)
     }
   }
 
@@ -84,41 +58,11 @@ const ChatPage = () => {
 
     // Create new chat if not exist
     if (!chatToUpdate) {
-      chatToUpdate = {
-        id: Date.now().toString(),
-        title: mockApi.generateMockTitle(content),
-        messages: [],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-      setChats(prev => [chatToUpdate!, ...prev])
-      setCurrentChat(chatToUpdate)
+      createChat(mockApi.generateMockTitle(content))
     }
 
     // Add user message
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      timestamp: new Date()
-    }
-
-    // Update chat with user message
-    const updatedChat = {
-      ...chatToUpdate,
-      messages: [...chatToUpdate.messages, userMessage],
-      updatedAt: new Date()
-    }
-
-    setCurrentChat(updatedChat)
-    setChats(prev => prev.map(c => c.id === updatedChat.id ? updatedChat : c))
-
-    // Update chat title if this is the first message
-    if (chatToUpdate.messages.length === 0) {
-      const newTitle = mockApi.generateMockTitle(content)
-      updatedChat.title = newTitle
-      setChats(prev => prev.map(c => c.id === updatedChat.id ? { ...c, title: newTitle } : c))
-    }
+    createMessage(content, 'user')
 
     // Start Loading
     setIsLoading(true)
@@ -129,23 +73,11 @@ const ChatPage = () => {
 
       // Generate  reponce
       const assistanceResponse = mockApi.generateMockResponse(content, region) // CHANGE
-
-      const assistanceMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: assistanceResponse,
-        timestamp: new Date()
-      }
+      createMessage(assistanceResponse, 'assistant')
 
       // Add assistant message
-      const finalChat = {
-        ...updatedChat,
-        messages: [...updatedChat.messages, assistanceMessage],
-        updatedAt: new Date()
-      }
+      updateChatTime()
 
-      setCurrentChat(finalChat)
-      setChats(prev => prev.map(c => c.id === finalChat.id ? finalChat : c))
     } catch (error) {
       console.error('Error sending message:', error)
       // Handle error state

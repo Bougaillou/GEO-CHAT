@@ -1,20 +1,8 @@
-export interface UserPrisma {
-  id: string;
-  userId: string;
-  emailAddress: string;
-  firstname: string;
-  lastname: string;
-  image: string;
-  createdAt: Date;
-}
-
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
-  regions?: RegionData[];
-  analyses?: AnalysisData[];
 }
 
 export interface Chat {

@@ -10,14 +10,10 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ succes: false, error: "Unauthorized" }), { status: 401 });
         }
 
-        const { currentChat } = useChat()
-        if (!currentChat) {
-            return new Response(JSON.stringify({ succes: false, error: "No CurrentChaT" }))
-
-        }
+        const { chatId } = await req.json()
 
         await db.chat.update({
-            where: { id: currentChat.id },
+            where: { id: chatId },
             data: {
                 updatedAt: new Date()
             }

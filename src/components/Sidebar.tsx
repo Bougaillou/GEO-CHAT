@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, onToggle, onNewChat, chats, currentChatId, onSelectCh
             }
 
             {/* Sidebar */}
-            <div className={`fixed md:relative  inset-y-0 z-50 w-64 bg-gray-300 text-white flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`} >
+            <div className={`fixed md:relative  inset-y-0 z-50 w-64 bg-gray-500 text-white flex flex-col transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`} >
                 {/* Header */}
                 <header className='p-4 border-b border-gray-600'>
                     <div className='flex items-center justify-between'>
@@ -85,30 +85,32 @@ const Sidebar = ({ isOpen, onToggle, onNewChat, chats, currentChatId, onSelectCh
                     </div>
                     <ScrollArea className='flex-1 px-4' >
                         <div className='space-y-2 pb-4'>
-                            {chats.map((chat) => (
-                                <div
-                                    key={chat.id}
-                                    className={`group flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors duration-200 ${currentChatId === chat.id ? "bg-gray-700" : "hover:bg-gray-600"}`}
-                                    onClick={() => onSelectChat(chat.id)}
-                                    onMouseEnter={() => setHoveredChatId(chat.id)}
-                                    onMouseLeave={() => setHoveredChatId(null)}
-                                >
-                                    <div className='flex-1 min-w-0'>
-                                        <div className='text-sm truncate'>{chat.title}</div>
-                                        <div className='text-xs text-gray-400'>{new Date(chat.updatedAt).toLocaleDateString()} </div>
+                            {chats.map((chat, index) => {
+                                return (
+                                    <div
+                                        key={`${chat.id}-${index}`}
+                                        className={`group flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors duration-200 border border-gray-300 ${currentChatId === chat.id ? "bg-gray-700" : "hover:bg-gray-600"}`}
+                                        onClick={() => onSelectChat(chat.id)}
+                                        onMouseEnter={() => setHoveredChatId(chat.id)}
+                                        onMouseLeave={() => setHoveredChatId(null)}
+                                    >
+                                        <div className='flex-1 min-w-0'>
+                                            <div className='text-sm truncate'>{chat.title}</div>
+                                            <div className='text-xs text-gray-400'>{new Date(chat.updatedAt).toLocaleDateString()} </div>
+                                        </div>
+                                        {hoveredChatId === chat.id && (
+                                            <Button
+                                                variant='ghost'
+                                                size='icon'
+                                                onClick={(e) => handelDeleteChat(e, chat.id)}
+                                                className='w-6 h-6 test-gray-4àà hover:text-red-400 hover:bg-transparent'
+                                            >
+                                                <Trash2 className='size-3' />
+                                            </Button>
+                                        )}
                                     </div>
-                                    {hoveredChatId === chat.id && (
-                                        <Button
-                                            variant='ghost'
-                                            size='icon'
-                                            onClick={(e) => handelDeleteChat(e, chat.id)}
-                                            className='w-6 h-6 test-gray-4àà hover:text-red-400 hover:bg-transparent'
-                                        >
-                                            <Trash2 className='size-3' />
-                                        </Button>
-                                    )}
-                                </div>
-                            ))
+                                )
+                            })
                             }
                         </div>
                     </ScrollArea>

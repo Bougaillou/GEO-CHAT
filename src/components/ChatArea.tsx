@@ -18,6 +18,7 @@ const ChatArea = ({ messages, isLoading }: ChatAreaProps) => {
     // useEffect
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        console.log(messages)
     }, [messages]);
 
     if (messages.length === 0) {

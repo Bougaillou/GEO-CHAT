@@ -10,17 +10,25 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ succes: false, error: "Unauthorized" }))
         }
 
+        const user = await db.user.findUnique({
+            where: { userId: userId }
+        });
+
+        if (!user) {
+            return new Response(JSON.stringify({ success: false, error: "User not found" }))
+        }
+
         const { title } = await req.json()
 
         const newChat = await db.chat.create({
             data: {
                 title: title || 'New Chat',
-                userId
+                userId: user.id
             }
         })
         return new Response(JSON.stringify({ success: true, data: newChat }))
     } catch (error) {
         const err = error as Error
-        return new Response(JSON.stringify({ success: false, error: err.message }), { status: 400 })
+        return new Response(JSON.stringify({ success: false, error: err.message }))
     }
 }

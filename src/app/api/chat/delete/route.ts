@@ -10,8 +10,15 @@ export async function POST(req: NextRequest) {
         if (!userId) {
             return new Response(JSON.stringify({ succes: false, error: "Unauthorized" }))
         }
+        const user = await db.user.findUnique({
+            where: { userId: userId }
+        });
+
+        if (!user) {
+            return new Response(JSON.stringify({ success: false, error: "User not found" }))
+        }
         await db.chat.delete({
-            where: { id: chatId, userId: userId }
+            where: { id: chatId, userId: user.id }
         })
 
         return new Response(JSON.stringify({ success: true, message: "Chat Delete" }))

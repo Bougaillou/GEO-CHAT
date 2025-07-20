@@ -23,8 +23,7 @@ const ChatPage = () => {
 
   // useContext
   const { isLoading, setIsLoading } = useUser()
-  const { chats, currentChat, createChat, deleteChat, selectChat, createMessage, updateChatTime } = useChat()
-
+  const { chats, currentChat, createChat, deleteChat, selectChat, createMessage } = useChat()
 
   // hooks
   const isMobile = useIsMobile()
@@ -52,46 +51,15 @@ const ChatPage = () => {
   }
 
   const sendMessage = async (content: string, region?: RegionCoordinates) => {
-    if (!content.trim()) return
-
-    let chatToUpdate = currentChat
-
-    // Create new chat if not exist
-    if (!chatToUpdate) {
-      createChat(mockApi.generateMockTitle(content))
-    }
-
-    // Add user message
-    createMessage(content, 'user')
-
-    // Start Loading
-    setIsLoading(true)
-
-    try {
-      // API delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      // Generate  reponce
-      const assistanceResponse = mockApi.generateMockResponse(content, region) // CHANGE
-      createMessage(assistanceResponse, 'assistant')
-
-      // Add assistant message
-      updateChatTime()
-
-    } catch (error) {
-      console.error('Error sending message:', error)
-      // Handle error state
-    } finally {
-      setIsLoading(false)
-    }
+    createMessage(content, mockApi.generateMockResponse(content, region))
   }
+
 
 
   // onClick functions
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
-
   return (
     <>
       <div className='flex h-screen bg-white'>

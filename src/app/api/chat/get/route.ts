@@ -11,11 +11,19 @@ export async function GET(req: NextRequest) {
             return new Response(JSON.stringify({ succes: false, error: "Unauthorized" }))
         }
 
+        const user = await db.user.findUnique({
+            where: { userId: userId }
+        });
+
+        if (!user) {
+            return new Response(JSON.stringify({ success: false, error: "User not found" }))
+        }
+
         const chats = await db.chat.findMany({
-            where: { userId: userId },
+            where: { userId: user.id },
             include: {
                 messages: {
-                    orderBy: { createdAt: "asc" }
+                    orderBy: { createdAt: 'asc' }
                 }
             },
             orderBy: { updatedAt: 'desc' }

@@ -1,4 +1,4 @@
-import { useChat } from "@/actions/ChatContext";
+import { useChat } from "@/context/ChatContext";
 import { db } from "@/lib/db";
 import { getAuth } from "@clerk/nextjs/server";
 import { Message } from "@prisma/client";

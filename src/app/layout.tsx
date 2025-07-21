@@ -4,6 +4,7 @@ import "./globals.css";
 import { PROJECT_TITLE } from '@/lib/constant'
 
 import "leaflet/dist/leaflet.css"
+import 'leaflet-draw/dist/leaflet.draw.css'
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
 
 import { ClerkProvider, SignedIn, SignedOut, SignIn } from '@clerk/nextjs'

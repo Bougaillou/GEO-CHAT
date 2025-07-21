@@ -2,9 +2,9 @@
 
 import { Chat } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useUser } from "./UserContext";
 import axios from "axios";
 import { mockApi } from "@/services/api";
+import { useUser } from "./UserContext";
 
 interface ChatContextType {
     chats: Chat[]

@@ -23,8 +23,12 @@ export interface RegionData {
 export interface RegionCoordinates {
   lat: number;
   lng: number;
-  radius?: number;
+  radius: number;
   polygon?: Array<[number, number]>;
+  geometry: {
+    type: string
+    coordinates: Array<[number, number]>
+  };
 }
 
 export interface AnalysisData {

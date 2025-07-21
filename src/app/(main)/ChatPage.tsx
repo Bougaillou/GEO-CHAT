@@ -1,9 +1,9 @@
 'use client'
-import { useChat } from '@/actions/ChatContext'
-import { useUser } from '@/actions/UserContext'
+import { useChat } from '@/context/ChatContext'
+import { useUser } from '@/context/UserContext'
 import ChatArea from '@/components/ChatArea'
 import ChatInput from '@/components/ChatInput'
-import MapPanel from '@/components/MapPanel'
+// import MapPanel from '@/components/MapPanel'
 import Sidebar from '@/components/Sidebar'
 import { Button } from '@/components/ui/Button'
 import { useIsMobile } from '@/hooks/useMobile'
@@ -12,8 +12,13 @@ import { mockApi } from '@/services/api'
 import { Chat, ChatMessage, RegionCoordinates } from '@/types'
 import { Menu } from 'lucide-react'
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 
 const ChatPage = () => {
+  const MapPanel = dynamic(() => import('@/components/MapPanel'), {
+    ssr: false
+  })
+
   // useSate
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   // const [chats, setChats] = useState<Chat[]>([])

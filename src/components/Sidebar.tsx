@@ -6,7 +6,7 @@ import { ADD_NEW_CHAT_TEXT, DELETE_CHAT_CONFIRMATION_MESSAGE, PROJECT_TITLE, REC
 import { Button } from '@/components/ui/Button'
 import { ScrollArea } from './ui/ScrollArea'
 import { UserButton } from '@clerk/nextjs'
-import { useUser } from '@/actions/UserContext'
+import { useUser } from '@/context/UserContext'
 
 
 interface SidebarProps {

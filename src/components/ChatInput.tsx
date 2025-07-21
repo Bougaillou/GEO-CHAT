@@ -26,9 +26,10 @@ const ChatInput = ({ isLoading, onSendMessage, selectedRegion, onToggleMap, onCl
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 128) + "px"
+
     }
   }, [message])
-
+console.log(selectedRegion)
   // handelers
   const handelSubmit = (e: React.FormEvent) => {
     e.preventDefault()

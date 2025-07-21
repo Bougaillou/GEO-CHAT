@@ -1,4 +1,4 @@
-'use Client'
+'use client'
 import { RegionCoordinates } from '@/types';
 import React, { useEffect, useRef, useState } from 'react'
 import { Textarea } from './ui/Textarea';
@@ -29,7 +29,6 @@ const ChatInput = ({ isLoading, onSendMessage, selectedRegion, onToggleMap, onCl
 
     }
   }, [message])
-console.log(selectedRegion)
   // handelers
   const handelSubmit = (e: React.FormEvent) => {
     e.preventDefault()

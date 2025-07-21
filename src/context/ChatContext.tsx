@@ -1,10 +1,11 @@
 'use client'
 
-import { Chat } from "@/types";
-import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { mockApi } from "@/services/api";
-import { useUser } from "./UserContext";
+import { Chat } from "@/types"
+import { createContext, useContext, useEffect, useState } from "react"
+import axios from "axios"
+import { mockApi } from "@/services/api"
+import { useUser } from "./UserContext"
+import { generateAnalysisResponse, parseGeospatialQuery } from "@/lib/gemini"
 
 interface ChatContextType {
     chats: Chat[]
@@ -47,6 +48,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     const createChat = async (title: string): Promise<Chat> => {
+        // console.log('TEST : ', await parseGeospatialQuery('i wont temerature deta from 2023 to 2024 in a moroccan region'))
         const res = await axios.post('/api/chat/create', { title })
         const newChat: Chat = {
             ...res.data.data,
@@ -62,7 +64,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         if (res.data.success) {
             setChats(prev => prev.filter(c => c.id !== chatId))
             if (currentChat?.id === chatId) {
-                const remainingChats = chats.filter(c => c.id !== chatId);
+                const remainingChats = chats.filter(c => c.id !== chatId)
                 setCurrentChat(remainingChats[0] || null)
             }
         }
@@ -74,9 +76,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const createMessage = async (userContent: string, assistantContent: string) => {
-        if (!userContent.trim()) return;
+        if (!userContent.trim()) return
 
-        let chatToUpdate = currentChat;
+        let chatToUpdate = currentChat
 
         if (!chatToUpdate) {
             chatToUpdate = await createChat(mockApi.generateMockTitle(userContent))
@@ -92,23 +94,40 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             chatId: currentChat.id
         })
 
+        // here it gaves me some variable to use to get data from GEE
+        const parseGeospatialResponce = await parseGeospatialQuery('i wont temerature deta from 2023 to 2024 in a moroccan region')
+
         const updatedChat = {
             ...chatToUpdate,
             messages: [...chatToUpdate.messages, userMessage.data.data],
             updatedAt: new Date()
         }
 
-        setCurrentChat(updatedChat);
-        setChats(prev => prev.map(c => c.id === updatedChat.id ? updatedChat : c));
+        setCurrentChat(updatedChat)
+        setChats(prev => prev.map(c => c.id === updatedChat.id ? updatedChat : c))
 
         // Show loading state
-        setIsLoading(true);
+        setIsLoading(true)
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 2000))
+
+            // after getting data from GEE
+            const assistenceQuery = {
+                query: assistantContent,
+                region: {
+                    lat: 3,
+                    lng: 3,
+                    radius: 4,
+                    name: 'name'
+                },
+                geeData: null
+            }
+
+            const assistanteResponce = await generateAnalysisResponse(assistenceQuery)
 
             const assistantMessage = await axios.post('/api/chat/message', {
-                content: assistantContent,
+                content: assistanteResponce,
                 role: 'assistant',
                 chatId: currentChat.id
             })
@@ -119,16 +138,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
                 updatedAt: new Date()
             }
 
-            setCurrentChat(finalChat);
-            setChats(prev => prev.map(c => c.id === finalChat.id ? finalChat : c));
+            setCurrentChat(finalChat)
+            setChats(prev => prev.map(c => c.id === finalChat.id ? finalChat : c))
 
             updateChatTime(currentChat.id)
 
         } catch (error) {
-            console.error('Error sending message:', error);
+            console.error('Error sending message:', error)
             // Handle error state
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
 
     }

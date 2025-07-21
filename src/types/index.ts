@@ -31,6 +31,13 @@ export interface RegionCoordinates {
   };
 }
 
+export type AnalysisResult = {
+  dataset: string;
+  summary: string;
+  data: any;
+  visualization?: string;
+}
+
 export interface AnalysisData {
   id: string;
   dataset: string;

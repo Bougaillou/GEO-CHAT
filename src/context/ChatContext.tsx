@@ -52,12 +52,15 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const createChat = async (title: string): Promise<Chat> => {
         // console.log('TEST : ', await parseGeospatialQuery('i wont temerature deta from 2023 to 2024 in a moroccan region'))
         const res = await axios.post('/api/chat/create', { title })
+
+        await new Promise(resolve => setTimeout(resolve, 2000))
         const newChat: Chat = {
             ...res.data.data,
             messages: res.data.data.messages || []
         }
         setChats(prev => [newChat, ...prev])
         setCurrentChat(newChat)
+
         return newChat
     }
 
@@ -88,18 +91,15 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             chatToUpdate = await createChat(mockApi.generateMockTitle(userContent))
         }
 
-        if (!currentChat) {
+        if (!chatToUpdate) {
             return console.log('No Current Chat')
         }
 
         const userMessage = await axios.post('/api/chat/message', {
             content: userContent,
             role: 'user',
-            chatId: currentChat.id
+            chatId: chatToUpdate.id
         })
-
-        // here it gaves me some variable to use to get data from GEE
-        const parseGeospatialResponce = await parseGeospatialQuery('i wont temerature deta from 2023 to 2024 in a moroccan region')
 
 
 
@@ -120,6 +120,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 
+
+            // here it gaves me some variable to use to get data from GEE
+            const parseGeospatialResponce = await parseGeospatialQuery(userContent)
 
             const geeRequest: GEEAnalysisRequest = {
                 dataset: parseGeospatialResponce.dataset,
@@ -145,7 +148,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             const assistantMessage = await axios.post('/api/chat/message', {
                 content: assistanteResponce,
                 role: 'assistant',
-                chatId: currentChat.id
+                chatId: chatToUpdate.id
             })
 
             const finalChat = {
@@ -157,7 +160,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             setCurrentChat(finalChat)
             setChats(prev => prev.map(c => c.id === finalChat.id ? finalChat : c))
 
-            updateChatTime(currentChat.id)
+            updateChatTime(chatToUpdate.id)
 
         } catch (error) {
             console.error('Error sending message:', error)

@@ -29,17 +29,23 @@ export interface ParsedGeospatialQuery {
 // Parse natural language query into structured parameters
 export async function parseGeospatialQuery(query: string): Promise<ParsedGeospatialQuery> {
   try {
-    const systemPrompt = `You are a geospatial data analysis expert. 
-Parse the user's natural language query into structured parameters for Google Earth Engine analysis.
+    const systemPrompt = `You are a geospatial data analysis expert.
+Your job is to parse the user's natural language query into structured parameters for Google Earth Engine analysis.
+
+Follow these rules strictly:
+- **If a time period or date range is mentioned by the user, extract it exactly as stated.**
+- **Only default to the most recent complete year (e.g., 2023) if no date or range is mentioned at all.**
+- All dates must be in ISO format (YYYY-MM-DD).
+- Do not make assumptions about dates. Be literal.
 
 Extract:
 - dataset: temperature, rainfall, precipitation, ndvi, vegetation, landcover, etc.
 - region: geographic location mentioned (country, city, area name)
-- timeRange: start and end dates (use ISO format, default to recent year if not specified)
+- timeRange: start and end dates (from the user query if available)
 - analysisType: trend, average, comparison, change, pattern, etc.
 - confidence: 0-1 score for parsing accuracy
 
-Respond with JSON in this exact format:
+Respond ONLY with JSON in this exact format:
 {
   "dataset": "string",
   "region": "string", 
@@ -49,7 +55,8 @@ Respond with JSON in this exact format:
   },
   "analysisType": "string",
   "confidence": 0.95
-}`;
+}
+`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-pro",

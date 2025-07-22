@@ -28,7 +28,6 @@ export interface ParsedGeospatialQuery {
 
 // Parse natural language query into structured parameters
 export async function parseGeospatialQuery(query: string): Promise<ParsedGeospatialQuery> {
-  console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
   try {
     const systemPrompt = `You are a geospatial data analysis expert. 
 Parse the user's natural language query into structured parameters for Google Earth Engine analysis.

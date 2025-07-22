@@ -49,3 +49,19 @@ export const SELECT_REGION_TEXT: string = 'Select Region'
 export const LOADING_MAP_TEXT: string = 'Loading map...'
 
 export const CONFIRM_SELECTION_TEXT: string = 'Confirm Selection'
+
+export interface GEEDatasetConfig {
+    dataset: string;
+    imageCollection: string;
+    bands: string[];
+    scale: number;
+}
+
+export const DATASET_CONFIGS: Record<string, GEEDatasetConfig> = {
+    temperature: {
+        dataset: "ECMWF/ERA5_LAND/MONTHLY_AGGR",
+        imageCollection: "ECMWF/ERA5_LAND/MONTHLY_AGGR",
+        bands: ["temperature_2m"],
+        scale: 7500,
+    },
+}

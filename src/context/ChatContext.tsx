@@ -1,11 +1,13 @@
 'use client'
 
-import { Chat } from "@/types"
+import { Chat, GEEAnalysisRequest, RegionCoordinates } from "@/types"
 import { createContext, useContext, useEffect, useState } from "react"
 import axios from "axios"
 import { mockApi } from "@/services/api"
 import { useUser } from "./UserContext"
 import { generateAnalysisResponse, parseGeospatialQuery } from "@/lib/gemini"
+import { geeAuthenticate } from "@/services/gee"
+import { fetchGEEData } from "@/lib/gee"
 
 interface ChatContextType {
     chats: Chat[]
@@ -14,7 +16,7 @@ interface ChatContextType {
     deleteChat: (chatId: string) => Promise<void>
     selectChat: (chatId: string) => Promise<void>
     // createMessage: (content: string, role: string, chatId?: string) => Promise<void>
-    createMessage: (userContent: string, assistantContent: string) => Promise<void>
+    createMessage: (userContent: string, region?: RegionCoordinates | null) => Promise<void>
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
@@ -75,8 +77,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         if (chat) setCurrentChat(chat)
     }
 
-    const createMessage = async (userContent: string, assistantContent: string) => {
+    const createMessage = async (userContent: string, region?: RegionCoordinates | null) => {
         if (!userContent.trim()) return
+
+        if (!region) return console.log('No region is selected')
 
         let chatToUpdate = currentChat
 
@@ -97,6 +101,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         // here it gaves me some variable to use to get data from GEE
         const parseGeospatialResponce = await parseGeospatialQuery('i wont temerature deta from 2023 to 2024 in a moroccan region')
 
+
+
         const updatedChat = {
             ...chatToUpdate,
             messages: [...chatToUpdate.messages, userMessage.data.data],
@@ -112,16 +118,26 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             await new Promise(resolve => setTimeout(resolve, 2000))
 
+
+
+
+            const geeRequest: GEEAnalysisRequest = {
+                dataset: parseGeospatialResponce.dataset,
+                timeRange: parseGeospatialResponce.timeRange,
+                geometry: region.geometry
+            }
+            console.log('GEEREQUEST', geeRequest)
+            const geeData = await fetchGEEData(geeRequest)
+            console.log('GEEDATA : ', geeData)
+
             // after getting data from GEE
             const assistenceQuery = {
-                query: assistantContent,
+                query: userContent,
                 region: {
-                    lat: 3,
-                    lng: 3,
-                    radius: 4,
-                    name: 'name'
+                    lat: region.lat,
+                    lng: region.lng,
                 },
-                geeData: null
+                geeData
             }
 
             const assistanteResponce = await generateAnalysisResponse(assistenceQuery)

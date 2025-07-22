@@ -55,8 +55,8 @@ const ChatPage = () => {
     }
   }
 
-  const sendMessage = async (content: string, region?: RegionCoordinates) => {
-    createMessage(content, mockApi.generateMockResponse(content, region))
+  const sendMessage = async (content: string, region?: RegionCoordinates| null) => {
+    createMessage(content, region)
   }
 
 

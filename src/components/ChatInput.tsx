@@ -33,6 +33,7 @@ const ChatInput = ({ isLoading, onSendMessage, selectedRegion, onToggleMap, onCl
   const handelSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (message.trim() && !isLoading) {
+      // onSendMessage(message.trim(), selectedRegion || undefined)
       onSendMessage(message.trim(), selectedRegion || undefined)
       setMessage('')
     }

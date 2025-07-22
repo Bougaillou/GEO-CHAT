@@ -31,6 +31,18 @@ export interface RegionCoordinates {
   };
 }
 
+export interface GEEAnalysisRequest {
+  dataset: string,
+  timeRange: {
+    end: string,
+    start: string
+  },
+  geometry: {
+    type: string
+    coordinates: Array<[number, number]>
+  }
+}
+
 export type AnalysisResult = {
   dataset: string;
   summary: string;
